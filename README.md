@@ -1,2 +1,40 @@
-# go-cognito
-This repository implements end-to-end authentication using AWS Cognito and Go.
+# AWS Cognito with Go
+
+This repository implements **end-to-end authentication** using **AWS Cognito** and **Go**.
+
+---
+
+## Directory Structure
+
+- **models/**  
+  Contains all the data structures and models representing entities and request/response payloads. For example, user sign up and sign in data.
+
+- **utils/**  
+  Stateless helper functions used throughout the application. These can include token hashing or any initializing clients to interact with AWS services.
+
+- **services/**  
+  Implements the core business logic and interfaces with AWS Cognito SDK. This layer performs operations like user registration, authentication, password reset flows, and token management.
+
+- **handlers/**  
+  Responsible for handling HTTP requests and responses. These functions parse incoming requests, call the relevant services, and return JSON responses with appropriate status codes.
+
+- **routes/**  
+  Defines the HTTP routes/endpoints and maps them to corresponding handlers. This keeps routing organized and separated from business logic.
+
+- **main.go**  
+  The application entry point. Sets up the Gin router, middleware, and starts the server.
+
+---
+
+## Features Status
+
+| Feature                  | Status         | Notes                            |
+| ------------------------ | -------------- | -------------------------------- |
+| Sign Up                  | ✅ Done        | User registration works          |
+| Login / Token Generation | ✅ Done        | JWT tokens issued on login       |
+| Confirm Sign Up          | ⏳ In Progress | Pending implementation           |
+| Resend Confirmation Code | ⏳ In Progress | To resend signup codes           |
+| Token Verification       | ⏳ In Progress | Middleware to protect routes     |
+| Forgot Password          | ⏳ In Progress | Trigger password reset code      |
+| Confirm Forgot Password  | ⏳ In Progress | Verify reset code & new password |
+| Refresh Token Handling   | ⏳ In Progress | Keep user sessions alive         |
