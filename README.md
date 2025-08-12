@@ -6,6 +6,9 @@ This repository implements **end-to-end authentication** using **AWS Cognito** a
 
 ## Directory Structure
 
+- **config/**  
+  Loads environment variables and injects them into the application.
+
 - **models/**  
   Contains all the data structures and models representing entities and request/response payloads. For example, user sign up and sign in data.
 
