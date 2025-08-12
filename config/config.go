@@ -12,6 +12,7 @@ import (
 type Config struct {
 	ClientId string
 	ClientSecret string
+	Region string
 }
 
 func LoadConfig() *Config {
@@ -23,6 +24,7 @@ func LoadConfig() *Config {
 
 	clientId := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
+	region := os.Getenv("REGION")
 
 	if clientId == "" || clientSecret == "" {
 		log.Fatal("Could not retrieve Client ID or Client Secret.")
@@ -30,5 +32,6 @@ func LoadConfig() *Config {
 	return &Config{
 		ClientId: clientId,
 		ClientSecret: clientSecret,
+		Region: region,
 	}
 }
