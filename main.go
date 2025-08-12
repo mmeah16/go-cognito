@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// Create authService using Cognito client, client ID, and client secret
-	authService := services.NewAuthService(client.CognitoClient, config.ClientId, config.ClientSecret)
+	authService := services.NewAuthService(client.CognitoClient, config.ClientId, config.ClientSecret, config.Region)
 	authHandler := handlers.NewAuthHandler(authService)
 
 	server := gin.Default()

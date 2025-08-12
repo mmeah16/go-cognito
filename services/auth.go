@@ -18,10 +18,11 @@ type AuthService struct {
 	CognitoClient *cognitoidentityprovider.Client
 	ClientID string
 	ClientSecret string
+	Region string
 }
 
 // Define constructor 
-func NewAuthService(client *cognitoidentityprovider.Client, clientID, clientSecret string) *AuthService {
+func NewAuthService(client *cognitoidentityprovider.Client, clientID, clientSecret, region string) *AuthService {
 	if client == nil {
 		log.Fatalf("Cognito Client cannot be nil.")
 	}
@@ -34,6 +35,7 @@ func NewAuthService(client *cognitoidentityprovider.Client, clientID, clientSecr
 		CognitoClient: client,
 		ClientID: clientID,
 		ClientSecret: clientSecret,
+		Region: region,
 	}
 }
 

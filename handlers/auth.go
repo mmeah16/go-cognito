@@ -32,6 +32,7 @@ func (h *AuthHandler) SignUp(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
+		return
 	}
 
 	context.JSON(http.StatusOK, gin.H{"message" : "Successfully signed up user!"})
