@@ -11,3 +11,7 @@ type SignInInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type UserConfirmation struct {
+	Email string `json:"email" binding:"required,email"`
+	Code string `json:"code" binding:"required"`
+}

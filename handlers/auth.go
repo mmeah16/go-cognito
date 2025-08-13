@@ -59,3 +59,23 @@ func (h *AuthHandler) SignIn(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message" : "Login successful.", "token" : token})
 
 }
+
+func (h *AuthHandler) ConfirmAccount(context *gin.Context) {
+	var user models.UserConfirmation
+
+	err := context.ShouldBindJSON(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : "Invalid input data."})
+		return
+	}
+
+	err = h.Service.ConfirmAccount(context, user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message" : "Account confirmed."})
+}

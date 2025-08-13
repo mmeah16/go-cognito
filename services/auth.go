@@ -93,3 +93,19 @@ func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (
 	
 	return *authResult.IdToken, err
 }
+
+func (s *AuthService) ConfirmAccount(context context.Context, user models.UserConfirmation) (error) {
+	_, err := s.CognitoClient.ConfirmSignUp(context, &cognitoidentityprovider.ConfirmSignUpInput{
+		Username: aws.String(user.Email),
+		ConfirmationCode: aws.String(user.Code),
+		ClientId: aws.String(s.ClientID),
+		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.Email)),
+	})
+
+	if err != nil {
+		log.Printf("ConfirmSignUp failed for user %s: %v", user.Email, err)
+		return fmt.Errorf("account confirmation failed: %w", err)
+	}
+
+	return nil
+}
