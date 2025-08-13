@@ -13,6 +13,7 @@ type Config struct {
 	ClientId string
 	ClientSecret string
 	Region string
+	UserPoolId string
 }
 
 func LoadConfig() *Config {
@@ -25,13 +26,15 @@ func LoadConfig() *Config {
 	clientId := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
 	region := os.Getenv("REGION")
+	userPoolId := os.Getenv("USER_POOL_ID")
 
-	if clientId == "" || clientSecret == "" {
-		log.Fatal("Could not retrieve Client ID or Client Secret.")
+	if clientId == "" || clientSecret == "" || userPoolId == ""{
+		log.Fatal("Could not retrieve Client ID, Client Secret, or User Pool ID.")
 	}
 	return &Config{
 		ClientId: clientId,
 		ClientSecret: clientSecret,
 		Region: region,
+		UserPoolId: userPoolId,
 	}
 }
