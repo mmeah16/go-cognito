@@ -18,6 +18,9 @@ This repository implements **end-to-end authentication** using **AWS Cognito** a
 - **services/**  
   Implements the core business logic and interfaces with AWS Cognito SDK. This layer performs operations like user registration, authentication, password reset flows, and token management.
 
+- **middleware/**  
+  Enables endpoint protection by implementing token verification.
+
 - **handlers/**  
   Responsible for handling HTTP requests and responses. These functions parse incoming requests, call the relevant services, and return JSON responses with appropriate status codes.
 
@@ -37,7 +40,7 @@ This repository implements **end-to-end authentication** using **AWS Cognito** a
 | Login / Token Generation | ✅ Done        | JWT tokens issued on login          |
 | Confirm Sign Up          | ✅ Done        | To confirm account and enable login |
 | Resend Confirmation Code | ⏳ In Progress | To resend signup codes              |
-| Token Verification       | ⏳ In Progress | Middleware to protect routes        |
+| Token Verification       | ✅ Done        | Middleware to protect routes        |
 | Forgot Password          | ⏳ In Progress | Trigger password reset code         |
 | Confirm Forgot Password  | ⏳ In Progress | Verify reset code & new password    |
 | Refresh Token Handling   | ⏳ In Progress | Keep user sessions alive            |

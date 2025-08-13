@@ -8,9 +8,11 @@ import (
 
 	"example.com/go-cognito/models"
 	"example.com/go-cognito/utils"
+	"github.com/MicahParks/keyfunc/v3"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // Define struct fields
@@ -19,23 +21,25 @@ type AuthService struct {
 	ClientID string
 	ClientSecret string
 	Region string
+	UserPoolID string
 }
 
 // Define constructor 
-func NewAuthService(client *cognitoidentityprovider.Client, clientID, clientSecret, region string) *AuthService {
+func NewAuthService(client *cognitoidentityprovider.Client, clientId, clientSecret, region, userPoolId string) *AuthService {
 	if client == nil {
 		log.Fatalf("Cognito Client cannot be nil.")
 	}
 
-	if clientID == "" || clientSecret == ""{
+	if clientId == "" || clientSecret == ""{
 		log.Fatalf("Client ID or Client Secret cannot be nil")
 	}
 	
 	return &AuthService{
 		CognitoClient: client,
-		ClientID: clientID,
+		ClientID: clientId,
 		ClientSecret: clientSecret,
 		Region: region,
+		UserPoolID: userPoolId,
 	}
 }
 
@@ -108,4 +112,44 @@ func (s *AuthService) ConfirmAccount(context context.Context, user models.UserCo
 	}
 
 	return nil
+}
+
+func (s *AuthService) VerifyToken(jwtToken string) (bool, error) {
+	
+	region := s.Region
+	userPoolId := s.UserPoolID
+
+	if region == "" || userPoolId == "" {
+		return false, fmt.Errorf("Region or User Pool ID environment variables are not set.")
+	}
+
+	jwksURL := fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", region, userPoolId)
+
+	// Create the keyfunc.Keyfunc.
+	jwks, err := keyfunc.NewDefault([]string{jwksURL})
+	if err != nil {
+		return false, fmt.Errorf("Failed to create JWKS from URL: %v", err)
+	}
+
+	// Parse the JWT
+	token, err := jwt.Parse(jwtToken, jwks.Keyfunc)
+	if err != nil {
+		return false, fmt.Errorf("Failed to parse JWT: %v", err)
+	}
+
+	if !token.Valid {
+		return false, fmt.Errorf("The token is not valid.")
+	}
+
+	log.Println("The token is valid.")
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok {
+		return false, fmt.Errorf("Failed to parse claims.")
+	}
+
+	fmt.Println("Token Claims: %s", claims)
+
+	return true, nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"example.com/go-cognito/config"
 	"example.com/go-cognito/handlers"
+	"example.com/go-cognito/middleware"
 	"example.com/go-cognito/routes"
 	"example.com/go-cognito/services"
 	"example.com/go-cognito/utils"
@@ -23,10 +24,11 @@ func main() {
 	}
 
 	// Create authService using Cognito client, client ID, and client secret
-	authService := services.NewAuthService(client.CognitoClient, config.ClientId, config.ClientSecret, config.Region)
+	authService := services.NewAuthService(client.CognitoClient, config.ClientId, config.ClientSecret, config.Region, config.UserPoolId)
 	authHandler := handlers.NewAuthHandler(authService)
+	middlewareHandler := middleware.NewMiddlewareHandler(authService)
 
 	server := gin.Default()
-	routes.RegisterRoutes(server, authHandler)
+	routes.RegisterRoutes(server, middlewareHandler, authHandler)
 	server.Run(":8080")
 }
