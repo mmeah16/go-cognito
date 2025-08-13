@@ -11,5 +11,6 @@ func RegisterRoutes(server *gin.Engine, authHandler *handlers.AuthHandler) {
 	{
 	authGroup.POST("/signup", authHandler.SignUp)
 	authGroup.POST("/login", authHandler.SignIn)
+	authGroup.POST("/confirmAccount", authHandler.ConfirmAccount)
 	}
 }

@@ -1,0 +1,7 @@
+POST http://localhost:8080/auth/confirmAccount
+content-type: application/json
+
+{
+    "email" : "muntasirmeah02@gmail.com",
+    "code" : "123456"
+}
