@@ -61,7 +61,7 @@ func (s *AuthService) SignUp(context context.Context, user models.SignUpInput) e
 		if errors.As(err, &invalidPassword) {
 			return errors.New(*invalidPassword.Message)
 		}
-		return fmt.Errorf("could not create new user: %w", err)
+		return fmt.Errorf("Could not create new user: %w", err)
 	}
 
 	return nil
@@ -86,7 +86,7 @@ func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (
 			log.Println(*resetRequired.Message)
 			return "", errors.New(*resetRequired.Message)
 		} 
-		return "", fmt.Errorf("couldn't sign in user %s: %w", user.UserName, err)
+		return "", fmt.Errorf("Could not sign in user %s: %w", user.UserName, err)
 	}
 
 	if output.AuthenticationResult == nil || output.AuthenticationResult.IdToken == nil {
@@ -152,4 +152,40 @@ func (s *AuthService) VerifyToken(jwtToken string) (bool, error) {
 	fmt.Println("Token Claims: %s", claims)
 
 	return true, nil
+}
+
+func (s *AuthService) ForgotPassword(context context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
+	output, err := s.CognitoClient.ForgotPassword(context, &cognitoidentityprovider.ForgotPasswordInput{
+		ClientId: aws.String(s.ClientID),
+		Username: aws.String(user.UserName),
+		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
+	})
+
+	if err != nil {
+		log.Printf("Couldn't start password reset for user '%v'. Here;s why: %v\n", user.UserName, err)
+		return nil, fmt.Errorf("Password reset failed: %w", err)
+	}
+
+	log.Println(output.CodeDeliveryDetails)
+	return output.CodeDeliveryDetails, nil 
+}
+
+func (s *AuthService) ConfirmForgotPassword(ctx context.Context, user models.ConfirmForgotPasswordInput) error {
+	_, err := s.CognitoClient.ConfirmForgotPassword(ctx, &cognitoidentityprovider.ConfirmForgotPasswordInput{
+		ClientId:         aws.String(s.ClientID),
+		ConfirmationCode: aws.String(user.ConfirmationCode),
+		Password:         aws.String(user.Password),
+		Username:         aws.String(user.UserName),
+		SecretHash: 	  aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
+	})
+	if err != nil {
+		var invalidPassword *types.InvalidPasswordException
+		if errors.As(err, &invalidPassword) {
+			log.Println(*invalidPassword.Message)
+		} else {
+			log.Printf("Couldn't confirm user %v. Here's why: %v", user.UserName, err)
+			return fmt.Errorf("Password reset failed: %w", err)
+		}
+	}
+	return nil
 }

@@ -41,6 +41,6 @@ This repository implements **end-to-end authentication** using **AWS Cognito** a
 | Confirm Sign Up          | ✅ Done        | To confirm account and enable login |
 | Resend Confirmation Code | ⏳ In Progress | To resend signup codes              |
 | Token Verification       | ✅ Done        | Middleware to protect routes        |
-| Forgot Password          | ⏳ In Progress | Trigger password reset code         |
-| Confirm Forgot Password  | ⏳ In Progress | Verify reset code & new password    |
+| Forgot Password          | ✅ Done        | Trigger password reset code         |
+| Confirm Forgot Password  | ✅ Done        | Verify reset code & new password    |
 | Refresh Token Handling   | ⏳ In Progress | Keep user sessions alive            |

@@ -15,6 +15,8 @@ func RegisterRoutes(server *gin.Engine, middlewareHandler *middleware.Middleware
 		authGroup.POST("/signup", authHandler.SignUp)
 		authGroup.POST("/login", authHandler.SignIn)
 		authGroup.POST("/confirmAccount", authHandler.ConfirmAccount)
+		authGroup.POST("/forgotPassword", authHandler.ForgotPassword)
+		authGroup.POST("/confirmForgotPassword", authHandler.ConfirmForgotPassword)
 	}
 
 	authenticated := server.Group("/")
