@@ -189,3 +189,18 @@ func (s *AuthService) ConfirmForgotPassword(ctx context.Context, user models.Con
 	}
 	return nil
 }
+
+func (s *AuthService) ResendConfirmationCode(ctx context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
+	output, err := s.CognitoClient.ResendConfirmationCode(ctx, &cognitoidentityprovider.ResendConfirmationCodeInput{
+		ClientId: aws.String(s.ClientID),
+		Username: aws.String(user.UserName),
+		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
+	})
+
+	if err != nil {
+		log.Printf("Couldn't resend confirmation code to user '%v'. Here;s why: %v\n", user.UserName, err)
+		return nil, fmt.Errorf("Password reset failed: %w", err)
+	}
+
+	return output.CodeDeliveryDetails, nil
+}

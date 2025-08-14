@@ -119,3 +119,23 @@ func (h *AuthHandler) ConfirmForgotPassword(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message" : "Password successfully changed."})
 }
+
+func (h *AuthHandler) ResendConfirmationCode(context *gin.Context) {
+	var user models.ForgotPasswordInput
+
+	err := context.ShouldBindJSON(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : "Invalid input data."})
+		return
+	}
+
+	output, err := h.Service.ResendConfirmationCode(context, user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message" : output})
+}
