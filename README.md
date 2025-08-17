@@ -34,14 +34,14 @@ This repository implements **end-to-end authentication** using **AWS Cognito** a
 
 ## Features Status
 
-| Feature                  | Status  | Notes                               |
-| ------------------------ | ------- | ----------------------------------- |
-| Sign Up                  | ✅ Done | User registration works             |
-| Login / Token Generation | ✅ Done | JWT tokens issued on login          |
-| Confirm Sign Up          | ✅ Done | To confirm account and enable login |
-| Resend Confirmation Code | ✅ Done | To resend signup codes              |
-| Token Verification       | ✅ Done | Middleware to protect routes        |
-| Forgot Password          | ✅ Done | Trigger password reset code         |
-| Confirm Forgot Password  | ✅ Done | Verify reset code & new password    |
-| Refresh Token Handling   | ✅ Done | Keep user sessions alive            |
-| Logout                   | ✅ Done | Invalidate tokens                   |
+| Feature                  | Status         | Notes                               |
+| ------------------------ | -------------- | ----------------------------------- |
+| Sign Up                  | ✅ Done        | User registration works             |
+| Login / Token Generation | ✅ Done        | JWT tokens issued on login          |
+| Confirm Sign Up          | ✅ Done        | To confirm account and enable login |
+| Resend Confirmation Code | ✅ Done        | To resend signup codes              |
+| Token Verification       | ✅ Done        | Middleware to protect routes        |
+| Forgot Password          | ✅ Done        | Trigger password reset code         |
+| Confirm Forgot Password  | ✅ Done        | Verify reset code & new password    |
+| Refresh Token Handling   | ✅ Done        | Keep user sessions alive            |
+| Logout                   | ⏳ In Progress | Invalidate tokens                   |
