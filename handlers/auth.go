@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"example.com/go-cognito/models"
@@ -49,15 +50,14 @@ func (h *AuthHandler) SignIn(context *gin.Context) {
 		return
 	}
 
-	token, err := h.Service.SignIn(context, user)
+	authResult, err := h.Service.SignIn(context, user)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message" : "Login successful.", "token" : token})
-
+	context.JSON(http.StatusOK, gin.H{"message" : authResult})
 }
 
 func (h *AuthHandler) ConfirmAccount(context *gin.Context) {
@@ -131,6 +131,29 @@ func (h *AuthHandler) ResendConfirmationCode(context *gin.Context) {
 	}
 
 	output, err := h.Service.ResendConfirmationCode(context, user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message" : output})
+}
+
+func (h *AuthHandler) GetTokensFromRefreshToken(context *gin.Context) {
+	var user models.RefreshTokenInput
+	
+
+	err := context.ShouldBindJSON(&user)
+	
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : "Invalid input data."})
+		return
+	}
+
+	log.Printf("refreshToken: %q", user.RefreshToken)
+
+	output, err := h.Service.GetTokensFromRefreshToken(context, user)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})

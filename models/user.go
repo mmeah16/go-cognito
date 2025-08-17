@@ -25,3 +25,7 @@ type ConfirmForgotPasswordInput struct {
 	Password string `json:"password" binding:"required"`
 	ConfirmationCode string `json:"code" binding:"required"`
 }
+
+type RefreshTokenInput struct {
+	RefreshToken string `json:"refreshToken" binding:"required"`
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"example.com/go-cognito/models"
 	"example.com/go-cognito/utils"
@@ -67,8 +68,8 @@ func (s *AuthService) SignUp(context context.Context, user models.SignUpInput) e
 	return nil
 }
 
-func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (string, error) {
-	var authResult *types.AuthenticationResultType
+func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (models.AuthResponse, error) {
+	// var authResult *types.AuthenticationResultType
 
 	output, err := s.CognitoClient.InitiateAuth(context, &cognitoidentityprovider.InitiateAuthInput{
 		AuthFlow: "USER_PASSWORD_AUTH",
@@ -84,18 +85,19 @@ func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (
 		var resetRequired *types.PasswordResetRequiredException
 		if errors.As(err, &resetRequired) {
 			log.Println(*resetRequired.Message)
-			return "", errors.New(*resetRequired.Message)
+			return models.AuthResponse{}, errors.New(*resetRequired.Message)
 		} 
-		return "", fmt.Errorf("Could not sign in user %s: %w", user.UserName, err)
+		return models.AuthResponse{}, fmt.Errorf("Could not sign in user %s: %w", user.UserName, err)
 	}
 
 	if output.AuthenticationResult == nil || output.AuthenticationResult.IdToken == nil {
-		return "", errors.New("Authentication result or ID Token is nil.")
-	} else {
-		authResult = output.AuthenticationResult
-	}
+		return models.AuthResponse{}, errors.New("Authentication result or ID Token is nil.")
+	} 
+
+	authResult := output.AuthenticationResult
+	response := models.NewAuthResponse(authResult.AccessToken, authResult.IdToken, authResult.RefreshToken, authResult.TokenType, authResult.ExpiresIn)
 	
-	return *authResult.IdToken, err
+	return response, err
 }
 
 func (s *AuthService) ConfirmAccount(context context.Context, user models.UserConfirmation) (error) {
@@ -149,7 +151,23 @@ func (s *AuthService) VerifyToken(jwtToken string) (bool, error) {
 		return false, fmt.Errorf("Failed to parse claims.")
 	}
 
-	fmt.Println("Token Claims: %s", claims)
+	tokenUse, ok := claims["token_use"].(string)
+
+	if !ok || tokenUse != "access" {
+		return false, fmt.Errorf("Invalid token use - must be an access token.")
+	}
+
+	log.Printf("Token Claims: %+v\n", claims)
+
+	exp, ok := claims["exp"].(float64)
+
+	if !ok {
+		return false, fmt.Errorf("Failed to get exp claim.")
+	}
+
+	if time.Now().Unix() > int64(exp) {
+		return false, fmt.Errorf("Token has expired.")
+	}
 
 	return true, nil
 }
@@ -170,8 +188,8 @@ func (s *AuthService) ForgotPassword(context context.Context, user models.Forgot
 	return output.CodeDeliveryDetails, nil 
 }
 
-func (s *AuthService) ConfirmForgotPassword(ctx context.Context, user models.ConfirmForgotPasswordInput) error {
-	_, err := s.CognitoClient.ConfirmForgotPassword(ctx, &cognitoidentityprovider.ConfirmForgotPasswordInput{
+func (s *AuthService) ConfirmForgotPassword(context context.Context, user models.ConfirmForgotPasswordInput) error {
+	_, err := s.CognitoClient.ConfirmForgotPassword(context, &cognitoidentityprovider.ConfirmForgotPasswordInput{
 		ClientId:         aws.String(s.ClientID),
 		ConfirmationCode: aws.String(user.ConfirmationCode),
 		Password:         aws.String(user.Password),
@@ -190,8 +208,8 @@ func (s *AuthService) ConfirmForgotPassword(ctx context.Context, user models.Con
 	return nil
 }
 
-func (s *AuthService) ResendConfirmationCode(ctx context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
-	output, err := s.CognitoClient.ResendConfirmationCode(ctx, &cognitoidentityprovider.ResendConfirmationCodeInput{
+func (s *AuthService) ResendConfirmationCode(context context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
+	output, err := s.CognitoClient.ResendConfirmationCode(context, &cognitoidentityprovider.ResendConfirmationCodeInput{
 		ClientId: aws.String(s.ClientID),
 		Username: aws.String(user.UserName),
 		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
@@ -203,4 +221,18 @@ func (s *AuthService) ResendConfirmationCode(ctx context.Context, user models.Fo
 	}
 
 	return output.CodeDeliveryDetails, nil
+}
+
+func (s *AuthService) GetTokensFromRefreshToken(context context.Context, user models.RefreshTokenInput) (*types.AuthenticationResultType, error) {
+	output, err := s.CognitoClient.GetTokensFromRefreshToken(context, &cognitoidentityprovider.GetTokensFromRefreshTokenInput{
+		ClientId: aws.String(s.ClientID),
+		RefreshToken: aws.String(user.RefreshToken),
+		ClientSecret: aws.String(s.ClientSecret),
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("Could not obtain new token: %w", err)
+	}
+
+	return output.AuthenticationResult, nil
 }

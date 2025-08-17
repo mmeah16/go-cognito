@@ -31,12 +31,12 @@ func (s *MiddlewareHandler) Authenticate(context *gin.Context) {
 	valid, err := s.Service.VerifyToken(token)
 
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization token."})
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
 	}
 
 	if !valid {
-		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization token."})
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
 	}
 
