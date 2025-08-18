@@ -162,3 +162,25 @@ func (h *AuthHandler) GetTokensFromRefreshToken(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message" : output})
 }
+
+func (h *AuthHandler) SignOut(context *gin.Context) {
+	var user models.SignOutInput
+
+	err := context.ShouldBindJSON(&user)
+	
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : "Invalid input data."})
+		return
+	}
+
+	log.Printf("refreshToken: %q", user.AccessToken)
+
+	output, err := h.Service.SignOut(context, user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message" : err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message" : output})
+}

@@ -110,7 +110,7 @@ func (s *AuthService) ConfirmAccount(context context.Context, user models.UserCo
 
 	if err != nil {
 		log.Printf("ConfirmSignUp failed for user %s: %v", user.Email, err)
-		return fmt.Errorf("account confirmation failed: %w", err)
+		return fmt.Errorf("Account confirmation failed: %w", err)
 	}
 
 	return nil
@@ -235,4 +235,16 @@ func (s *AuthService) GetTokensFromRefreshToken(context context.Context, user mo
 	}
 
 	return output.AuthenticationResult, nil
+}
+
+func (s *AuthService) SignOut(context context.Context, user models.SignOutInput) (*cognitoidentityprovider.GlobalSignOutOutput, error) {
+	output, err := s.CognitoClient.GlobalSignOut(context, &cognitoidentityprovider.GlobalSignOutInput{
+		AccessToken: aws.String(user.AccessToken),
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("Could not sign out: %w", err)
+	}
+
+	return output, nil
 }

@@ -12,13 +12,14 @@ import (
 func RegisterRoutes(server *gin.Engine, middlewareHandler *middleware.MiddlewareHandler, authHandler *handlers.AuthHandler) {
 	authGroup := server.Group("/auth")
 	{
-		authGroup.POST("/signup", authHandler.SignUp)
-		authGroup.POST("/login", authHandler.SignIn)
+		authGroup.POST("/signUp", authHandler.SignUp)
+		authGroup.POST("/signIn", authHandler.SignIn)
 		authGroup.POST("/confirmAccount", authHandler.ConfirmAccount)
 		authGroup.POST("/forgotPassword", authHandler.ForgotPassword)
 		authGroup.POST("/confirmForgotPassword", authHandler.ConfirmForgotPassword)
 		authGroup.POST("/resendConfirmationCode", authHandler.ResendConfirmationCode)
 		authGroup.POST("/refreshToken", authHandler.GetTokensFromRefreshToken)
+		authGroup.POST("/signOut", authHandler.SignOut)
 	}
 
 	authenticated := server.Group("/")

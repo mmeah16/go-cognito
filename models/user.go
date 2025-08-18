@@ -29,3 +29,7 @@ type ConfirmForgotPasswordInput struct {
 type RefreshTokenInput struct {
 	RefreshToken string `json:"refreshToken" binding:"required"`
 }
+
+type SignOutInput struct {
+	AccessToken string `json:"accessToken" binding:"required"`
+}
