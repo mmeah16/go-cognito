@@ -53,6 +53,7 @@ func (s *AuthService) SignUp(context context.Context, user models.SignUpInput) e
 		Password: aws.String(user.Password),
 		UserAttributes: []types.AttributeType{
 			{Name: aws.String("name"), Value: aws.String(user.Name)},
+			{Name: aws.String("email"), Value: aws.String(user.UserName)},
 		},
 		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
 	})
