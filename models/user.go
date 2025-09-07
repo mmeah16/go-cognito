@@ -11,9 +11,9 @@ type SignInInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type UserConfirmation struct {
+type UserConfirmationInput struct {
 	Email string `json:"email" binding:"required,email"`
-	Code string `json:"code" binding:"required"`
+	Code  string `json:"code" binding:"required"`
 }
 
 type ForgotPasswordInput struct {
@@ -21,8 +21,8 @@ type ForgotPasswordInput struct {
 }
 
 type ConfirmForgotPasswordInput struct {
-	UserName string `json:"username" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	UserName         string `json:"username" binding:"required,email"`
+	Password         string `json:"password" binding:"required"`
 	ConfirmationCode string `json:"code" binding:"required"`
 }
 

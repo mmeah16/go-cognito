@@ -1,0 +1,133 @@
+basePath: /
+definitions:
+  models.AuthResponse:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      idToken:
+        type: string
+      refreshToken:
+        type: string
+      tokenType:
+        type: string
+    type: object
+  models.SignInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.SignUpInput:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+  models.UserConfirmationInput:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    required:
+    - code
+    - email
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact: {}
+  description: These APIs support an end-to-end authentication workflow using AWS
+    Cognito to support identity and access management for Gin APIs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: AWS Cognito and Go Gin
+  version: "1.0"
+paths:
+  /auth/confirmAccount:
+    post:
+      consumes:
+      - application/json
+      description: Confirms a user account with provided confirmation code sent by
+        AWS via email.
+      parameters:
+      - description: Confirmation code
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserConfirmationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account confirmed.
+        "400":
+          description: Invalid input data
+      summary: Confirm user account.
+      tags:
+      - Auth
+  /auth/signIn:
+    post:
+      consumes:
+      - application/json
+      description: Logins a user account with provided details
+      parameters:
+      - description: Sign in data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged in user!
+          schema:
+            $ref: '#/definitions/models.AuthResponse'
+        "400":
+          description: Invalid input data or sign in failed
+      summary: Sign in a user
+      tags:
+      - Auth
+  /auth/signUp:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account with the provided details
+      parameters:
+      - description: Sign up data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignUpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed up user!
+        "400":
+          description: Invalid input data or signup failed
+      summary: Sign up a new user
+      tags:
+      - Auth
+swagger: "2.0"

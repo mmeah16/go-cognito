@@ -36,20 +36,20 @@ func NewInfraStack(scope constructs.Construct, id string, props *InfraStackProps
 			Email: jsii.Bool(true),
 		},
 		SelfSignUpEnabled: jsii.Bool(true),
-		UserPoolName: jsii.String("userpool-1"),
-		UserVerification:  &awscognito.UserVerificationConfig{
-			EmailStyle: awscognito.VerificationEmailStyle_CODE,
+		UserPoolName:      jsii.String("userpool-1"),
+		UserVerification: &awscognito.UserVerificationConfig{
+			EmailStyle:   awscognito.VerificationEmailStyle_CODE,
 			EmailSubject: jsii.String("Confirm Sign-Up"),
 		},
 	})
-	
+
 	userPoolClientOptions := &awscognito.UserPoolClientOptions{
 		AuthFlows: &awscognito.AuthFlow{
-			User: jsii.Bool(true),
+			User:         jsii.Bool(true),
 			UserPassword: jsii.Bool(true),
-			UserSrp: jsii.Bool(true),
+			UserSrp:      jsii.Bool(true),
 		},
-		GenerateSecret: jsii.Bool(true),
+		GenerateSecret:     jsii.Bool(true),
 		UserPoolClientName: jsii.String("user-pool-client-1"),
 	}
 
@@ -89,7 +89,7 @@ func env() *awscdk.Environment {
 	if err != nil {
 		log.Fatal("Could not retrieve environment variables.")
 	}
-	
+
 	return &awscdk.Environment{
 		Account: jsii.String(os.Getenv("AWS_ACCOUNT_ID")),
 		Region:  jsii.String(os.Getenv("REGION")),

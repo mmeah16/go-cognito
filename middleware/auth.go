@@ -41,5 +41,5 @@ func (s *MiddlewareHandler) Authenticate(context *gin.Context) {
 	}
 
 	context.Next()
-	
+
 }

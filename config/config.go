@@ -10,10 +10,10 @@ import (
 )
 
 type Config struct {
-	ClientId string
+	ClientId     string
 	ClientSecret string
-	Region string
-	UserPoolId string
+	Region       string
+	UserPoolId   string
 }
 
 func LoadConfig() *Config {
@@ -28,13 +28,13 @@ func LoadConfig() *Config {
 	region := os.Getenv("REGION")
 	userPoolId := os.Getenv("USER_POOL_ID")
 
-	if clientId == "" || clientSecret == "" || userPoolId == ""{
+	if clientId == "" || clientSecret == "" || userPoolId == "" {
 		log.Fatal("Could not retrieve Client ID, Client Secret, or User Pool ID.")
 	}
 	return &Config{
-		ClientId: clientId,
+		ClientId:     clientId,
 		ClientSecret: clientSecret,
-		Region: region,
-		UserPoolId: userPoolId,
+		Region:       region,
+		UserPoolId:   userPoolId,
 	}
 }

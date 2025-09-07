@@ -19,28 +19,28 @@ import (
 // Define struct fields
 type AuthService struct {
 	CognitoClient *cognitoidentityprovider.Client
-	ClientID string
-	ClientSecret string
-	Region string
-	UserPoolID string
+	ClientID      string
+	ClientSecret  string
+	Region        string
+	UserPoolID    string
 }
 
-// Define constructor 
+// Define constructor
 func NewAuthService(client *cognitoidentityprovider.Client, clientId, clientSecret, region, userPoolId string) *AuthService {
 	if client == nil {
 		log.Fatalf("Cognito Client cannot be nil.")
 	}
 
-	if clientId == "" || clientSecret == ""{
+	if clientId == "" || clientSecret == "" {
 		log.Fatalf("Client ID or Client Secret cannot be nil")
 	}
-	
+
 	return &AuthService{
 		CognitoClient: client,
-		ClientID: clientId,
-		ClientSecret: clientSecret,
-		Region: region,
-		UserPoolID: userPoolId,
+		ClientID:      clientId,
+		ClientSecret:  clientSecret,
+		Region:        region,
+		UserPoolID:    userPoolId,
 	}
 }
 
@@ -76,8 +76,8 @@ func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (
 		AuthFlow: "USER_PASSWORD_AUTH",
 		ClientId: aws.String(s.ClientID),
 		AuthParameters: map[string]string{
-			"USERNAME": user.UserName, 
-			"PASSWORD": user.Password, 
+			"USERNAME":    user.UserName,
+			"PASSWORD":    user.Password,
 			"SECRET_HASH": utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName),
 		},
 	})
@@ -87,26 +87,26 @@ func (s *AuthService) SignIn(context context.Context, user models.SignInInput) (
 		if errors.As(err, &resetRequired) {
 			log.Println(*resetRequired.Message)
 			return models.AuthResponse{}, errors.New(*resetRequired.Message)
-		} 
+		}
 		return models.AuthResponse{}, fmt.Errorf("Could not sign in user %s: %w", user.UserName, err)
 	}
 
 	if output.AuthenticationResult == nil || output.AuthenticationResult.IdToken == nil {
 		return models.AuthResponse{}, errors.New("Authentication result or ID Token is nil.")
-	} 
+	}
 
 	authResult := output.AuthenticationResult
 	response := models.NewAuthResponse(authResult.AccessToken, authResult.IdToken, authResult.RefreshToken, authResult.TokenType, authResult.ExpiresIn)
-	
+
 	return response, err
 }
 
-func (s *AuthService) ConfirmAccount(context context.Context, user models.UserConfirmation) (error) {
+func (s *AuthService) ConfirmAccount(context context.Context, user models.UserConfirmationInput) error {
 	_, err := s.CognitoClient.ConfirmSignUp(context, &cognitoidentityprovider.ConfirmSignUpInput{
-		Username: aws.String(user.Email),
+		Username:         aws.String(user.Email),
 		ConfirmationCode: aws.String(user.Code),
-		ClientId: aws.String(s.ClientID),
-		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.Email)),
+		ClientId:         aws.String(s.ClientID),
+		SecretHash:       aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.Email)),
 	})
 
 	if err != nil {
@@ -118,7 +118,7 @@ func (s *AuthService) ConfirmAccount(context context.Context, user models.UserCo
 }
 
 func (s *AuthService) VerifyToken(jwtToken string) (bool, error) {
-	
+
 	region := s.Region
 	userPoolId := s.UserPoolID
 
@@ -175,8 +175,8 @@ func (s *AuthService) VerifyToken(jwtToken string) (bool, error) {
 
 func (s *AuthService) ForgotPassword(context context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
 	output, err := s.CognitoClient.ForgotPassword(context, &cognitoidentityprovider.ForgotPasswordInput{
-		ClientId: aws.String(s.ClientID),
-		Username: aws.String(user.UserName),
+		ClientId:   aws.String(s.ClientID),
+		Username:   aws.String(user.UserName),
 		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
 	})
 
@@ -186,7 +186,7 @@ func (s *AuthService) ForgotPassword(context context.Context, user models.Forgot
 	}
 
 	log.Println(output.CodeDeliveryDetails)
-	return output.CodeDeliveryDetails, nil 
+	return output.CodeDeliveryDetails, nil
 }
 
 func (s *AuthService) ConfirmForgotPassword(context context.Context, user models.ConfirmForgotPasswordInput) error {
@@ -195,7 +195,7 @@ func (s *AuthService) ConfirmForgotPassword(context context.Context, user models
 		ConfirmationCode: aws.String(user.ConfirmationCode),
 		Password:         aws.String(user.Password),
 		Username:         aws.String(user.UserName),
-		SecretHash: 	  aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
+		SecretHash:       aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
 	})
 	if err != nil {
 		var invalidPassword *types.InvalidPasswordException
@@ -211,8 +211,8 @@ func (s *AuthService) ConfirmForgotPassword(context context.Context, user models
 
 func (s *AuthService) ResendConfirmationCode(context context.Context, user models.ForgotPasswordInput) (*types.CodeDeliveryDetailsType, error) {
 	output, err := s.CognitoClient.ResendConfirmationCode(context, &cognitoidentityprovider.ResendConfirmationCodeInput{
-		ClientId: aws.String(s.ClientID),
-		Username: aws.String(user.UserName),
+		ClientId:   aws.String(s.ClientID),
+		Username:   aws.String(user.UserName),
 		SecretHash: aws.String(utils.GetSecretHash(s.ClientID, s.ClientSecret, user.UserName)),
 	})
 
@@ -226,7 +226,7 @@ func (s *AuthService) ResendConfirmationCode(context context.Context, user model
 
 func (s *AuthService) GetTokensFromRefreshToken(context context.Context, user models.RefreshTokenInput) (*types.AuthenticationResultType, error) {
 	output, err := s.CognitoClient.GetTokensFromRefreshToken(context, &cognitoidentityprovider.GetTokensFromRefreshTokenInput{
-		ClientId: aws.String(s.ClientID),
+		ClientId:     aws.String(s.ClientID),
 		RefreshToken: aws.String(user.RefreshToken),
 		ClientSecret: aws.String(s.ClientSecret),
 	})

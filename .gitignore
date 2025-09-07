@@ -27,14 +27,6 @@ go.work.sum
 # env file
 .env
 
-<<<<<<< HEAD
-# Sample http requests
-sample
-=======
-# JWKS file
-jwks.json
->>>>>>> 70350cd3a01ac98df0feed9d243b54567a2e81b0
-
 # Editor/IDE
 # .idea/
 # .vscode/

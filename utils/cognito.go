@@ -29,4 +29,3 @@ func CreateCognitoClient() (CognitoActions, error) {
 
 	return actor, nil
 }
-
